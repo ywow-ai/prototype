@@ -1,51 +1,85 @@
 import { FC } from "react";
-import { Route, Routes } from "react-router";
-import { useOnRouteChange } from "../utils/routes/hook";
+import {
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+  // useBlocker,
+} from "react-router";
 import Layout from "./Layout";
 import Xx from "./Xx";
+import Login from "./auth/Login";
+// import { Navigate } from "react-router";
+import { Provider } from "react-redux";
+import { authStore } from "../utils/auth/auth-store";
+
+const Main: FC = () => {
+  // useBlocker(({ nextLocation }) => {
+  //   console.log(nextLocation);
+  //   return true;
+  // });
+
+  // const login = false;
+
+  // if (!login) {
+  //   return <Navigate to="/login" />;
+  // } else {
+  // }
+  return <Outlet />;
+};
+
+const routes = createBrowserRouter([
+  {
+    path: "/",
+    element: <Main />,
+    children: [
+      {
+        path: "/",
+        element: <Layout />,
+        children: [
+          { path: "/", element: <Xx path="/" /> },
+          { path: "/categories", element: <Xx path="categories" /> },
+          { path: "/product-add", element: <Xx path="product-add" /> },
+          { path: "/products", element: <Xx path="products" /> },
+          {
+            path: "/products/product-list",
+            element: <Xx path="products/product-list" />,
+          },
+          {
+            path: "/products/product-grid",
+            element: <Xx path="products/product-grid" />,
+          },
+          { path: "/transactions", element: <Xx path="transactions" /> },
+          {
+            path: "/transactions/transaction-list",
+            element: <Xx path="transactions/transaction-list" />,
+          },
+          {
+            path: "/transactions/transaction-details",
+            element: <Xx path="transactions/transaction-details" />,
+          },
+          { path: "/sellers", element: <Xx path="sellers" /> },
+          {
+            path: "/sellers/seller-list",
+            element: <Xx path="sellers/seller-list" />,
+          },
+          {
+            path: "/sellers/seller-details",
+            element: <Xx path="sellers/seller-details" />,
+          },
+          { path: "/reviews", element: <Xx path="reviews" /> },
+        ],
+      },
+      { path: "/login", element: <Login /> },
+      { path: "*", element: <div>404 Not Found</div> },
+    ],
+  },
+]);
 
 const App: FC = () => {
-  useOnRouteChange((path) => {
-    console.log("this route", path);
-  });
-
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route path="/" element={<Xx path="/" />} />
-        <Route path="/categories" element={<Xx path="categories" />} />
-        <Route path="/product-add" element={<Xx path="product-add" />} />
-        <Route path="/products" element={<Xx path="products" />} />
-        <Route
-          path="products/product-list"
-          element={<Xx path="products/product-list" />}
-        />
-        <Route
-          path="products/product-grid"
-          element={<Xx path="products/product-grid" />}
-        />
-        <Route path="/transactions" element={<Xx path="transactions" />} />
-        <Route
-          path="transactions/transaction-list"
-          element={<Xx path="transactions/transaction-list" />}
-        />
-        <Route
-          path="transactions/transaction-details"
-          element={<Xx path="transactions/transaction-details" />}
-        />
-        <Route path="/sellers" element={<Xx path="sellers" />} />
-        <Route
-          path="sellers/seller-list"
-          element={<Xx path="sellers/seller-list" />}
-        />
-        <Route
-          path="sellers/seller-details"
-          element={<Xx path="sellers/seller-details" />}
-        />
-        <Route path="/reviews" element={<Xx path="reviews" />} />
-      </Route>
-      <Route path="*" element={<div>404</div>} />
-    </Routes>
+    <Provider store={authStore}>
+      <RouterProvider router={routes} />
+    </Provider>
   );
 };
 

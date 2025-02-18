@@ -1,16 +1,14 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
+import { authApi } from "./auth-hook";
+import { authSlice } from "./auth-slice";
 
-const slice = createSlice({
-  name: "auth",
-  initialState: {
-    token: localStorage.getItem("item") as string | null,
-    user: null as UserT | null,
+export const authStore = configureStore({
+  reducer: {
+    [authSlice.name]: authSlice.reducer,
+    [authApi.reducerPath]: authApi.reducer,
   },
-  reducers: {
-    setAuth: () => {},
-  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(authApi.middleware),
 });
 
-export const store = configureStore({ reducer: slice.reducer });
-export const { setAuth } = slice.actions;
-export type AuthT = ReturnType<typeof store.getState>;
+export type AuthT = ReturnType<typeof authStore.getState>;

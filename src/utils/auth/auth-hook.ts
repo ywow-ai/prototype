@@ -1,23 +1,29 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { setToken } from "./auth-slice";
 
-const api = createApi({
-  reducerPath: "auth",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8000/api/auth" }),
+export const authApi = createApi({
+  reducerPath: "auth-api",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://127.0.0.1:8000/api",
+    headers: { "Content-Type": "application/json" },
+  }),
   endpoints: (builder) => ({
     login: builder.mutation<
       ApiResponseT<{ token: string; user: UserT }>,
       LoginT
     >({
       query: (attr) => ({
-        url: "/login",
+        url: "/auth/login-user",
         method: "POST",
         body: attr,
       }),
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
           const response = await queryFulfilled;
+          dispatch(setToken(response.data.data.token));
         } catch (error) {
           console.error(error);
+          dispatch(setToken(null));
         }
       },
     }),
@@ -31,11 +37,15 @@ const api = createApi({
         }
       },
     }),
-    token: builder.mutation({
-      query: () => ({ url: "/check-token" }),
+    token: builder.mutation<ApiResponseT<unknown>, string>({
+      query: (attr) => ({
+        url: "/check-token",
+        headers: { Authorization: `Bearer ${attr}` },
+      }),
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
           const response = await queryFulfilled;
+          console.log(response);
         } catch (error) {
           console.error(error);
         }
@@ -44,5 +54,5 @@ const api = createApi({
   }),
 });
 
-export { api as authApi };
-export const { useLoginMutation, useLogoutMutation, useTokenMutation } = api;
+export const { useLoginMutation, useLogoutMutation, useTokenMutation } =
+  authApi;
