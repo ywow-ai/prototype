@@ -1,11 +1,13 @@
 import { FC, useState } from "react";
-import { useLoginMutation, useTokenMutation } from "../../utils/auth/auth-hook";
+import { useLoginMutation } from "../../utils/auth/auth-hook";
+import { useNavigate } from "react-router";
 
 const Login: FC = () => {
   const [login] = useLoginMutation();
-  const [token] = useTokenMutation();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,12 +17,7 @@ const Login: FC = () => {
         throw loginResponse.error;
       }
 
-      const tokenResponse = await token(loginResponse.data.data.token);
-      if (tokenResponse.error) {
-        throw tokenResponse.error;
-      }
-
-      console.log(tokenResponse);
+      navigate("/");
     } catch (error) {
       console.error(error);
     }

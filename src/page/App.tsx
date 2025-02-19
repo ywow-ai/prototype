@@ -1,34 +1,65 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import {
   createBrowserRouter,
   Outlet,
   RouterProvider,
-  // useBlocker,
+  useLocation,
+  useNavigate,
 } from "react-router";
 import Layout from "./Layout";
 import Xx from "./Xx";
 import Login from "./auth/Login";
-// import { Navigate } from "react-router";
-import { Provider } from "react-redux";
-import { authStore } from "../utils/auth/auth-store";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { store, type StoreT } from "../utils/store";
+import { useTokenMutation } from "../utils/auth/auth-hook";
+import Loading from "./Loading";
+import { setIsLoading } from "../utils/app/app-slice";
 
 const Main: FC = () => {
-  // useBlocker(({ nextLocation }) => {
-  //   console.log(nextLocation);
-  //   return true;
-  // });
+  const [token] = useTokenMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isLoading = useSelector(
+    (state: StoreT) => state["app-slice"].isLoading
+  );
 
-  // const login = false;
+  const validate = async () => {
+    dispatch(setIsLoading(true));
+    try {
+      const response = await token();
+      if (response.error) {
+        navigate("/login");
+      } else {
+        if (pathname === "/login") {
+          navigate("/");
+        }
+      }
+    } catch {
+      navigate("/login");
+    } finally {
+      dispatch(setIsLoading(false));
+    }
+  };
 
-  // if (!login) {
-  //   return <Navigate to="/login" />;
-  // } else {
-  // }
-  return <Outlet />;
+  useEffect(() => {
+    return () => {
+      validate();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  return (
+    <>
+      {isLoading && <Loading />}
+      <Outlet />
+    </>
+  );
 };
 
 const routes = createBrowserRouter([
   {
+    HydrateFallback: Loading,
     path: "/",
     element: <Main />,
     children: [
@@ -77,7 +108,7 @@ const routes = createBrowserRouter([
 
 const App: FC = () => {
   return (
-    <Provider store={authStore}>
+    <Provider store={store}>
       <RouterProvider router={routes} />
     </Provider>
   );
