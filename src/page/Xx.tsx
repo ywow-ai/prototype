@@ -1,6 +1,13 @@
-import { FC } from "react";
+import { useEffect } from "react";
+import { useOutletContext } from "react-router";
 
-const Xx: FC<{ path: string }> = ({ path }) => {
+const Xx: FX<{ path: string }> = ({ path }) => {
+  const context = useOutletContext();
+
+  useEffect(() => {
+    console.log(context);
+  }, [context]);
+
   return <p>{path}</p>;
 };
 
