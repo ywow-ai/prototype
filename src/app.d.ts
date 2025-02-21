@@ -1,5 +1,3 @@
-import { FC } from "react";
-
 export {};
 
 declare global {
@@ -15,6 +13,7 @@ declare global {
    */
 
   type ModuleT =
+    // | "Basic"
     | "Registrasi"
     | "Pasien"
     | "Rekam-Medis"
@@ -24,7 +23,7 @@ declare global {
     | "Laboratorium";
 
   interface PermissionT {
-    module: ModuleT;
+    module: ModuleT | null;
     can_view: boolean;
     can_edit: boolean;
     can_create: boolean;
@@ -57,5 +56,4 @@ declare global {
   /**
    * override fx
    */
-  type FX<T = object> = FC<T & { permissions?: PermissionT[] }>;
 }

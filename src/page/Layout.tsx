@@ -1,7 +1,11 @@
-import { Fragment /*useEffect*/ } from "react";
-// import { useSelector } from "react-redux";
-import { NavLink, type NavLinkProps, Outlet, useLocation } from "react-router";
-// import { StoreT } from "../utils/store";
+import { FC, Fragment } from "react";
+import {
+  NavLink,
+  type NavLinkProps,
+  Outlet,
+  useLocation,
+  useOutletContext,
+} from "react-router";
 
 type NavT = Omit<NavLinkProps, "children" | "to"> & {
   to: string;
@@ -40,21 +44,8 @@ const navs: NavT[] = [
   { to: "/reviews", name: "Reviews" },
 ];
 
-const Layout: FX = () => {
+const Layout: FC = () => {
   const { pathname } = useLocation();
-  // const permissions = useSelector(
-  //   ({ "auth-slice": { permissions } }: StoreT) => permissions
-  // );
-
-  // useEffect(() => {
-  //   console.log(pathname);
-  // }, [pathname]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     console.log(permissions);
-  //   };
-  // }, [permissions]);
 
   return (
     <div className="flex">
@@ -101,7 +92,7 @@ const Layout: FX = () => {
         </ul>
       </aside>
       <div className="w-6/7">
-        <Outlet />
+        <Outlet context={useOutletContext()} />
       </div>
     </div>
   );
